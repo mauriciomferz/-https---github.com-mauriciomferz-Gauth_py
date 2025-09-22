@@ -8,9 +8,6 @@ __version__ = "0.1.0"
 __author__ = "Mauricio Fernandez"
 __email__ = "mauricio.fernandez@siemens.com"
 
-# RFC 0111 compliance check
-from . import compliance
-
 from .core.gauth import GAuth
 from .core.config import Config
 from .core.types import (
@@ -21,9 +18,6 @@ from .core.types import (
     TransactionResult,
 )
 
-# Import attestation package
-from . import attestation
-
 __all__ = [
     "GAuth",
     "Config", 
@@ -32,5 +26,4 @@ __all__ = [
     "AccessToken", 
     "Transaction",
     "TransactionResult",
-    "attestation",
 ]

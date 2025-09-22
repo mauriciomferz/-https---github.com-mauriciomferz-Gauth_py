@@ -100,6 +100,7 @@ python -m gauth.demo.main
 - **RFC 111 & RFC 115 compliance**: Standards-compliant implementation
 - **Configurable audit backends**: Memory, file, or custom storage
 - **Audit event filtering**: Query audit logs by client, type, time range
+- **Legal compliance**: See [LEGAL_FRAMEWORK.md](LEGAL_FRAMEWORK.md) for complete legal provisions
 
 ### 🚀 **Performance & Scalability**
 - **Rate limiting**: Configurable request rate limiting

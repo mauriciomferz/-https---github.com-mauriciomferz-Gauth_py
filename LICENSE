@@ -22,7 +22,24 @@ SOFTWARE.
 
 ---
 
-Code Components extracted from GiFo-RfC 0111 must include this license text 
-and are provided without warranty. This file is subject to the Gimel 
-Foundation's Legal Provisions Relating to GiFo Documents.
-See http://GimelFoundation.com or https://github.com/Gimel-Foundation for details.
+## Additional Legal Provisions
+
+### GiFo RFC Compliance
+Components implementing GiFo-RfC 0111 and GiFo-RfC 0115 specifications are subject to 
+additional provisions from the Gimel Foundation. 
+
+### Complete Legal Framework
+For comprehensive legal provisions, licensing details, compliance requirements, and 
+exclusion policies, see:
+
+**LEGAL_FRAMEWORK.md** - The authoritative source for all legal matters
+
+### External References
+- Gimel Foundation: http://GimelFoundation.com
+- Repository: https://github.com/Gimel-Foundation
+
+---
+
+**IMPORTANT**: LEGAL_FRAMEWORK.md serves as the single source of truth for all legal 
+provisions. In case of any conflicts between this file and other documentation, 
+LEGAL_FRAMEWORK.md takes precedence.

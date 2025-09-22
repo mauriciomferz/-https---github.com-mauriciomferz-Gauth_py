@@ -10,7 +10,6 @@ This document provides a comprehensive overview of the Go to Python conversion s
 
 | Go Package | Python Package | Status | Notes |
 |------------|----------------|---------|-------|
-| pkg/attestation/ | gauth/attestation/ | ✅ Complete | RFC 111/115 cryptographic attestation chains |
 | pkg/auth/ | gauth/auth/ | ✅ Complete | JWT, OAuth2, PASETO, Basic auth + AuthService |
 | pkg/authz/ | gauth/authz/ | ✅ Complete | Authorization policies and enforcement |
 | pkg/audit/ | gauth/audit/ | ✅ Complete | Console, File, and PoA audit loggers |
@@ -71,16 +70,6 @@ This document provides a comprehensive overview of the Go to Python conversion s
 - **PoA Validation**: Comprehensive validation and compliance checking
 - **PoA Audit**: Specialized audit logging for PoA operations
 
-#### ✅ RFC 111/115 Cryptographic Attestation
-- **Ed25519 Signatures**: Cryptographic signing and verification for delegation chains
-- **Canonical JSON**: Deterministic encoding for cross-language compatibility
-- **Chain Verification**: Complete structural and cryptographic validation
-- **Revocation Support**: Pluggable revocation providers (in-memory, distributed)
-- **Temporal Validation**: Expiry and issuance time bounds enforcement
-- **Scope Narrowing**: Prevention of privilege escalation attacks
-- **Metrics Integration**: Built-in performance and security metrics
-- **RFC 0111 Compliance**: Build-time exclusion checks for forbidden integrations
-
 ### Additional Enhancements (Python-Specific)
 
 #### ✅ Enhanced Rate Limiting
@@ -93,7 +82,6 @@ This document provides a comprehensive overview of the Go to Python conversion s
 - **Rate Limiting Examples**: All algorithms with realistic scenarios
 - **Resilience Examples**: Fault tolerance patterns and combined strategies
 - **Monitoring Examples**: Real-time dashboard simulation and observability
-- **Attestation Examples**: Cryptographic delegation chain demonstrations
 
 #### ✅ Async/Await Support
 - **Full Async Implementation**: All operations support async/await patterns
