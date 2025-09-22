@@ -24,7 +24,7 @@ Protocol Usage Declaration:
 
 from .types import (
     # Core PoA types
-    PowerOfAttorney,
+    PoADefinition,
     Principal,
     Client,
     Authorization,
@@ -62,14 +62,40 @@ from .principal import (
     # Principal management
     PrincipalManager,
     PrincipalVerification,
-    IdentityVerification
+    IdentityVerification,
+    PrincipalType,
+    OrganizationType,
+    IndividualPrincipal,
+    OrganizationPrincipal
 )
 
 from .client import (
     # Client management
     ClientManager,
     ClientRegistration,
-    ClientCapabilities
+    ClientCapabilities,
+    ClientType,
+    CapabilityLevel,
+    SecurityClearance
+)
+
+from .integration import (
+    # GAuth integration
+    PoAGAuthIntegration,
+    PoATokenExtension,
+    MemoryPoAStore
+)
+
+from .requirements import (
+    # Requirements factory functions
+    create_default_requirements,
+    create_enterprise_requirements,
+    create_individual_requirements,
+)
+
+from .audit import (
+    # Audit logging
+    ConsoleAuditLogger,
 )
 
 from .errors import (
@@ -83,7 +109,7 @@ from .errors import (
 
 __all__ = [
     # Core types
-    'PowerOfAttorney',
+    'PoADefinition',
     'Principal', 
     'Client',
     'Authorization',
@@ -106,6 +132,30 @@ __all__ = [
     # Status
     'PoAStatus',
     'ValidationResult',
+    
+    # Principal types
+    'PrincipalType',
+    'OrganizationType', 
+    'IndividualPrincipal',
+    'OrganizationPrincipal',
+    
+    # Client types
+    'ClientType',
+    'CapabilityLevel',
+    'SecurityClearance',
+    
+    # Integration
+    'PoAGAuthIntegration',
+    'PoATokenExtension', 
+    'MemoryPoAStore',
+    
+    # Requirements factory functions
+    'create_default_requirements',
+    'create_enterprise_requirements',
+    'create_individual_requirements',
+    
+    # Audit logging
+    'ConsoleAuditLogger',
     
     # Managers
     'AuthorizationManager',

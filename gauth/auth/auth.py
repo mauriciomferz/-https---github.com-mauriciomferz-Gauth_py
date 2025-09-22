@@ -40,7 +40,11 @@ class GAuthAuthenticator(Authenticator):
         try:
             # Initialize the appropriate manager based on auth type
             if self.config.auth_type == AuthType.JWT:
-                self._managers['jwt'] = JWTManager(self.config)
+                rotation_manager = None
+                # AuthService injects rotation manager reference under magic key
+                if isinstance(getattr(self.config, 'extra_config', None), dict):
+                    rotation_manager = self.config.extra_config.get('__rotation_manager__')
+                self._managers['jwt'] = JWTManager(self.config, rotation_manager=rotation_manager)
                 await self._managers['jwt'].initialize()
                 
             elif self.config.auth_type == AuthType.PASETO:

@@ -3,9 +3,10 @@ Common types and utilities shared across GAuth packages.
 Provides core identifiers, status types, and time utilities.
 """
 
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import NewType, Union
+from typing import NewType, Union, Dict, Any, Optional
 import uuid
 
 
@@ -27,6 +28,41 @@ class Status(str, Enum):
     
     def __str__(self) -> str:
         return self.value
+
+
+@dataclass
+class AuditContext:
+    """Context information for audit logging."""
+    # Actor information
+    actor_id: str = ""
+    actor_type: str = ""
+    session_id: str = ""
+    
+    # Action details
+    action: str = ""
+    resource: str = ""
+    result: str = ""
+    
+    # Context information
+    request_id: str = ""
+    trace_id: str = ""
+    source: str = ""
+    
+    # Additional details
+    message: str = ""
+    metadata: Dict[str, str] = field(default_factory=dict)
+    
+    # Network information
+    ip_address: str = ""
+    user_agent: str = ""
+    location: str = ""
+    
+    # Timestamps
+    timestamp: Optional[datetime] = None
+    
+    def __post_init__(self):
+        if self.timestamp is None:
+            self.timestamp = datetime.now()
 
 
 class ErrorLevel(str, Enum):

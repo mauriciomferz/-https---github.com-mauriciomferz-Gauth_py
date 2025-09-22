@@ -20,6 +20,9 @@ class ClientType(Enum):
     """Types of clients that can receive PoA."""
     INDIVIDUAL = "individual"
     AI_SYSTEM = "ai_system"
+    LLM = "llm"  # Large Language Model
+    DIGITAL_AGENT = "digital_agent"  # Digital agent
+    AGENTIC_AI = "agentic_ai"  # Agentic AI
     SERVICE = "service"
     ORGANIZATION = "organization"
     SOFTWARE_AGENT = "software_agent"
@@ -46,6 +49,23 @@ class CapabilityType(Enum):
     TRANSACTION_PROCESSING = "transaction_processing"
     SIGNATURE = "signature"
     DELEGATION = "delegation"
+
+
+class CapabilityLevel(Enum):
+    """Capability levels for clients."""
+    BASIC = "basic"
+    INTERMEDIATE = "intermediate"
+    ADVANCED = "advanced"
+    EXPERT = "expert"
+
+
+class SecurityClearance(Enum):
+    """Security clearance levels."""
+    PUBLIC = "public"
+    INTERNAL = "internal"
+    CONFIDENTIAL = "confidential"
+    SECRET = "secret"
+    TOP_SECRET = "top_secret"
 
 
 @dataclass

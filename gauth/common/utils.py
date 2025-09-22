@@ -16,6 +16,16 @@ def generate_id(prefix: str = "") -> str:
     return f"{prefix}{unique_id}" if prefix else unique_id
 
 
+def get_current_time() -> datetime:
+    """Get current UTC datetime (was unix timestamp)."""
+    return datetime.now(timezone.utc)
+
+
+def get_current_time_ms() -> int:
+    """Get current Unix timestamp in milliseconds."""
+    return int(time.time() * 1000)
+
+
 def generate_secure_token(length: int = 32) -> str:
     """Generate a cryptographically secure random token."""
     return secrets.token_urlsafe(length)

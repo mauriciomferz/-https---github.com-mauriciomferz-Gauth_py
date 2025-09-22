@@ -9,6 +9,9 @@ from enum import Enum
 from typing import Dict, List, Optional, Any, Set
 import uuid
 
+# Import enhanced requirements from dedicated module
+from .requirements import Requirements
+
 
 class AuthorizationType(Enum):
     """Fundamental type of authorization (RFC 115 Section B)."""
@@ -94,18 +97,8 @@ class SubProxyRules:
     notification_required: bool = True
 
 
-@dataclass
-class Requirements:
-    """Requirements that must be met for PoA validity (RFC 115 Section D)."""
-    minimum_age: Optional[int] = None
-    required_certifications: List[str] = field(default_factory=list)
-    required_licenses: List[str] = field(default_factory=list)
-    background_check_required: bool = False
-    financial_qualification_required: bool = False
-    insurance_required: bool = False
-    bonding_required: bool = False
-    periodic_review_required: bool = False
-    continuing_education_required: bool = False
+# Requirements class is now imported from requirements.py
+# This maintains backward compatibility while using the enhanced implementation
 
 
 @dataclass
@@ -127,25 +120,49 @@ class Principal:
     """
     id: str
     name: str
-    type: str  # individual, corporation, partnership, etc.
+    principal_type: str  # Use principal_type to match demo expectations
     legal_jurisdiction: str
     contact_information: Dict[str, str] = field(default_factory=dict)
     verification_status: str = "unverified"
     identity_documents: List[str] = field(default_factory=list)
     authorized_representatives: List[str] = field(default_factory=list)
     
+    # Additional fields for enhanced principal types
+    individual: Optional[Any] = None  # IndividualPrincipal
+    organization: Optional[Any] = None  # OrganizationPrincipal
+    
+    # Legacy compatibility
+    @property
+    def type(self) -> str:
+        """Legacy compatibility property."""
+        return self.principal_type
+    
+    @type.setter
+    def type(self, value: str):
+        """Legacy compatibility setter."""
+        self.principal_type = value
+    
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
-        return {
+        result = {
             'id': self.id,
             'name': self.name,
-            'type': self.type,
+            'type': self.principal_type,
+            'principal_type': self.principal_type,
             'legal_jurisdiction': self.legal_jurisdiction,
             'contact_information': self.contact_information,
             'verification_status': self.verification_status,
             'identity_documents': self.identity_documents,
             'authorized_representatives': self.authorized_representatives
         }
+        
+        if self.individual:
+            result['individual'] = self.individual.__dict__ if hasattr(self.individual, '__dict__') else self.individual
+        
+        if self.organization:
+            result['organization'] = self.organization.__dict__ if hasattr(self.organization, '__dict__') else self.organization
+        
+        return result
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Principal':
@@ -169,24 +186,44 @@ class Client:
     """
     id: str
     name: str
-    type: str  # individual, ai_system, service, organization, etc.
+    client_type: str  # Use client_type to match demo expectations
     capabilities: List[str] = field(default_factory=list)
     certifications: List[str] = field(default_factory=list)
     verification_status: str = "unverified"
     trust_level: str = "basic"
     operational_constraints: Dict[str, Any] = field(default_factory=dict)
     
+    # Additional fields for enhanced client types
+    version: Optional[str] = None
+    capability_level: Optional[str] = None
+    security_clearance: Optional[str] = None
+    
+    # Legacy compatibility
+    @property
+    def type(self) -> str:
+        """Legacy compatibility property."""
+        return self.client_type
+    
+    @type.setter
+    def type(self, value: str):
+        """Legacy compatibility setter."""
+        self.client_type = value
+    
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             'id': self.id,
             'name': self.name,
-            'type': self.type,
+            'type': self.client_type,
+            'client_type': self.client_type,
             'capabilities': self.capabilities,
             'certifications': self.certifications,
             'verification_status': self.verification_status,
             'trust_level': self.trust_level,
-            'operational_constraints': self.operational_constraints
+            'operational_constraints': self.operational_constraints,
+            'version': self.version,
+            'capability_level': self.capability_level,
+            'security_clearance': self.security_clearance,
         }
 
     @classmethod
@@ -209,7 +246,7 @@ class Authorization:
     """
     Defines the type and scope of powers being delegated (RFC 115 Section B).
     """
-    type: AuthorizationType
+    auth_type: AuthorizationType  # Use auth_type to match demo expectations
     representation: RepresentationType
     applicable_sectors: List[IndustrySector] = field(default_factory=list)
     applicable_regions: List[GeographicRegion] = field(default_factory=list)
@@ -221,10 +258,22 @@ class Authorization:
     restrictions: List[str] = field(default_factory=list)
     sub_proxy_rules: Optional[SubProxyRules] = None
     
+    # Legacy compatibility
+    @property
+    def type(self) -> AuthorizationType:
+        """Legacy compatibility property."""
+        return self.auth_type
+    
+    @type.setter
+    def type(self, value: AuthorizationType):
+        """Legacy compatibility setter."""
+        self.auth_type = value
+    
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
         return {
-            'type': self.type.value,
+            'type': self.auth_type.value,
+            'auth_type': self.auth_type.value,
             'representation': self.representation.value,
             'applicable_sectors': [s.value for s in self.applicable_sectors],
             'applicable_regions': [r.value for r in self.applicable_regions],
@@ -239,24 +288,26 @@ class Authorization:
 
 
 @dataclass
-class PowerOfAttorney:
+class PoADefinition:
     """
     Complete Power-of-Attorney document (RFC 115).
+    This is the main PoA credential definition structure.
     """
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: str = "1.0"
     created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
     effective_date: datetime = field(default_factory=datetime.now)
     expiration_date: Optional[datetime] = None
     
     # Parties
     principal: Principal = None
-    client: Client = None
+    authorized_client: Client = None  # Renamed to match Go implementation
     
     # Authorization details
     authorization: Authorization = None
     
-    # Requirements and restrictions
+    # Requirements and restrictions (using enhanced Requirements from requirements.py)
     requirements: Requirements = field(default_factory=Requirements)
     restrictions: Restrictions = field(default_factory=Restrictions)
     
@@ -289,23 +340,58 @@ class PowerOfAttorney:
         if now < self.effective_date:
             return False
         
-        # Check expiration
-        if self.expiration_date and now > self.expiration_date:
+        # Check expiration using requirements
+        if self.requirements.validity_period.is_expired():
+            return False
+        
+        # Check requirements validity
+        if not self.requirements.validity_period.is_valid_at(now):
             return False
         
         return True
 
+    def is_active(self) -> bool:
+        """Check if the PoA is active (alias for is_valid for Go compatibility)."""
+        return self.is_valid()
+
     def is_expired(self) -> bool:
         """Check if the PoA has expired."""
-        if not self.expiration_date:
-            return False
-        return datetime.now() > self.expiration_date
+        return self.requirements.validity_period.is_expired()
 
     def time_until_expiration(self) -> Optional[timedelta]:
         """Get time until expiration."""
-        if not self.expiration_date:
+        if not self.requirements.validity_period.end_date:
             return None
-        return self.expiration_date - datetime.now()
+        return self.requirements.validity_period.end_date - datetime.now()
+
+    def validate(self) -> bool:
+        """
+        Perform comprehensive validation of the PoA definition.
+        
+        Returns:
+            True if valid, raises PoAValidationError if invalid
+        """
+        # Validate basic structure
+        if not self.id:
+            from .errors import PoAValidationError
+            raise PoAValidationError("PoA ID is required")
+        
+        if not self.principal:
+            from .errors import PoAValidationError
+            raise PoAValidationError("Principal is required")
+        
+        if not self.authorized_client:
+            from .errors import PoAValidationError
+            raise PoAValidationError("Authorized client is required")
+        
+        if not self.authorization:
+            from .errors import PoAValidationError
+            raise PoAValidationError("Authorization is required")
+        
+        # Validate requirements
+        self.requirements.validate()
+        
+        return True
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
@@ -313,10 +399,11 @@ class PowerOfAttorney:
             'id': self.id,
             'version': self.version,
             'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
             'effective_date': self.effective_date.isoformat(),
             'expiration_date': self.expiration_date.isoformat() if self.expiration_date else None,
             'principal': self.principal.to_dict() if self.principal else None,
-            'client': self.client.to_dict() if self.client else None,
+            'authorized_client': self.authorized_client.to_dict() if self.authorized_client else None,
             'authorization': self.authorization.to_dict() if self.authorization else None,
             'requirements': self.requirements.__dict__,
             'restrictions': self.restrictions.__dict__,
@@ -333,6 +420,10 @@ class PowerOfAttorney:
             'last_modified_at': self.last_modified_at.isoformat(),
             'revision_history': self.revision_history
         }
+
+
+# Alias for backward compatibility
+PowerOfAttorney = PoADefinition
 
 
 @dataclass

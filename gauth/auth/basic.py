@@ -31,31 +31,41 @@ class BasicAuthManager:
     
     def __init__(self, config: AuthConfig):
         self.config = config
+        # Create a temporary minimal config so _hash_password calls during extraction don't fail
+        self.basic_config: BasicAuthConfig = BasicAuthConfig(users={}, realm='GAuth', hash_algorithm='sha256')
         self.basic_config = self._extract_basic_config()
         self._initialized = False
     
     def _extract_basic_config(self) -> BasicAuthConfig:
-        """Extract basic auth config from auth config."""
-        extra = self.config.extra_config
-        
-        # Default test users
+        """Extract basic auth config from auth config.
+
+        We intentionally avoid relying on self.basic_config during the construction
+        of default hashed users to prevent attribute ordering issues.
+        """
+        extra = self.config.extra_config or {}
+        algorithm = extra.get('hash_algorithm', 'sha256')
+
+        def _hash(password: str) -> str:
+            return hashlib.sha256(password.encode()).hexdigest() if algorithm == 'sha256' else hashlib.sha256(password.encode()).hexdigest()
+
+        # Provide deterministic default demo users if caller did not supply any
         default_users = {
-            'admin': self._hash_password('admin123'),
-            'user': self._hash_password('user123')
+            'admin': _hash('admin123'),
+            'user': _hash('user123')
         }
-        
+
         return BasicAuthConfig(
             users=extra.get('users', default_users),
             realm=extra.get('realm', 'GAuth'),
-            hash_algorithm=extra.get('hash_algorithm', 'sha256')
+            hash_algorithm=algorithm
         )
     
     def _hash_password(self, password: str) -> str:
         """Hash password using configured algorithm."""
-        if self.basic_config and self.basic_config.hash_algorithm == 'sha256':
+        # Currently only sha256 supported; structure allows future extension
+        if self.basic_config.hash_algorithm == 'sha256':
             return hashlib.sha256(password.encode()).hexdigest()
-        else:
-            return hashlib.sha256(password.encode()).hexdigest()
+        return hashlib.sha256(password.encode()).hexdigest()
     
     async def initialize(self) -> None:
         """Initialize basic auth manager."""

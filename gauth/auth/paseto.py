@@ -5,7 +5,7 @@ PASETO authentication manager for GAuth.
 import json
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 from .types import (
@@ -76,7 +76,8 @@ class PasetoManager:
             raise TokenError("PASETO manager not initialized")
         
         try:
-            now = datetime.utcnow()
+            # Use timezone-aware UTC datetimes to avoid naive/aware comparison warnings
+            now = datetime.now(timezone.utc)
             exp = now + self.paseto_config.expiration_delta
             
             # Build payload
@@ -84,8 +85,8 @@ class PasetoManager:
                 'iss': self.paseto_config.issuer or 'gauth',
                 'sub': request.subject or request.username,
                 'aud': request.audience or self.paseto_config.audience,
-                'exp': exp.isoformat() + 'Z',
-                'iat': now.isoformat() + 'Z',
+                'exp': exp.isoformat().replace('+00:00', 'Z'),
+                'iat': now.isoformat().replace('+00:00', 'Z'),
                 'jti': f"paseto_{int(now.timestamp())}"
             }
             
@@ -152,7 +153,7 @@ class PasetoManager:
                     )
                     
                     # Check expiration for mock
-                    if expires_at and datetime.utcnow() > expires_at:
+                    if expires_at and datetime.now(timezone.utc) > expires_at:
                         return ValidationResult(
                             valid=False,
                             error_message="Token has expired",

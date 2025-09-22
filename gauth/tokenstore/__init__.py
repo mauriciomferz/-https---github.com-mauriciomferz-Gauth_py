@@ -31,6 +31,12 @@ from .distributed import (
     REDIS_AVAILABLE
 )
 
+# Optional direct Redis token store scaffold (lighter weight than full distributed wrapper)
+try:  # pragma: no cover
+    from .redis import RedisTokenStore  # type: ignore
+except Exception:  # pragma: no cover
+    RedisTokenStore = None  # type: ignore
+
 __all__ = [
     # Core types and interfaces
     "TokenData",
@@ -52,7 +58,9 @@ __all__ = [
     "DistributedConfig",
     "DistributedTokenStore",
     "create_distributed_store",
-    "REDIS_AVAILABLE"
+    "REDIS_AVAILABLE",
+    # Optional direct Redis store
+    "RedisTokenStore"
 ]
 
 __version__ = "1.0.0"

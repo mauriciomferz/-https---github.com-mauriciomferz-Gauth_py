@@ -93,6 +93,13 @@ from .basic import (
     validate_basic_credentials,
 )
 
+from .service import (
+    # Authentication service
+    AuthService,
+    AuthServiceConfig,
+    create_auth_service,
+)
+
 from .errors import (
     # Authentication errors
     AuthError,
@@ -150,6 +157,11 @@ __all__ = [
     'BasicAuthManager',
     'BasicAuthConfig',
     'validate_basic_credentials',
+    
+    # Authentication service
+    'AuthService',
+    'AuthServiceConfig',
+    'create_auth_service',
     
     # Errors
     'AuthError',

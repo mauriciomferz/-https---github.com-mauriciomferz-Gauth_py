@@ -18,6 +18,43 @@ from .types import Principal
 logger = logging.getLogger(__name__)
 
 
+class PrincipalType(Enum):
+    """Type of principal entity."""
+    INDIVIDUAL = "individual"
+    ORGANIZATION = "organization"
+
+
+class OrganizationType(Enum):
+    """Type of organization."""
+    COMMERCIAL = "commercial"
+    PUBLIC_AUTHORITY = "public_authority"
+    NON_PROFIT = "non_profit"
+    ASSOCIATION = "association"
+    OTHER = "other"
+
+
+@dataclass
+class IndividualPrincipal:
+    """Individual principal information."""
+    full_name: str
+    date_of_birth: Optional[str] = None
+    nationality: Optional[str] = None
+    identification_number: Optional[str] = None
+    identification_type: Optional[str] = None
+
+
+@dataclass
+class OrganizationPrincipal:
+    """Organization principal information."""
+    organization_type: OrganizationType
+    legal_name: str
+    registration_number: Optional[str] = None
+    registration_authority: Optional[str] = None
+    legal_jurisdiction: Optional[str] = None
+    industry_code: Optional[str] = None
+    tax_id: Optional[str] = None
+
+
 class VerificationStatus(Enum):
     """Status of principal verification."""
     UNVERIFIED = "unverified"
