@@ -1,0 +1,24 @@
+{
+  "canonical_json_length": 233,
+  "digest": "e10bb55e5370dbdc49baa671d110cd55870fa5effd2350411616cf561eb77002",
+  "generated_at": 1758582399,
+  "payload": {
+    "audience": "fixture-audience",
+    "constraints": {
+      "region": "us",
+      "tier": "gold"
+    },
+    "depth": 1,
+    "expires_at": 1700003600,
+    "issued_at": 1700000000,
+    "nonce": "0123456789abcdef",
+    "scopes": [
+      "write",
+      "read",
+      "admin"
+    ],
+    "subject": "fixture-subject",
+    "version": 1
+  },
+  "python_version": "3.9.6"
+}
