@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  # GAuth Python development environment
+  gauth-py-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: gauth-py-dev
+    volumes:
+      - .:/app
+      - gauth-py-venv:/app/.venv
+    working_dir: /app
+    environment:
+      - PYTHONPATH=/app
+      - GAUTH_CLIENT_ID=dev-client
+      - GAUTH_CLIENT_SECRET=dev-secret
+      - GAUTH_AUTH_SERVER_URL=https://auth.example.com
+      - GAUTH_SECRET_KEY=dev-secret-key
+    ports:
+      - "8080:8080"  # Main service
+      - "8000:8000"  # FastAPI/web service
+    command: ["python", "-m", "gauth.demo.main"]
+    
+  # Test runner service
+  gauth-py-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: gauth-py-test
+    volumes:
+      - .:/app
+      - gauth-py-test-venv:/app/.venv
+    working_dir: /app
+    environment:
+      - PYTHONPATH=/app
+    command: ["python", "-m", "pytest", "tests/", "-v", "--cov=gauth"]
+    
+  # Redis service for distributed token storage and rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: gauth-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    
+  # PostgreSQL service for persistent audit logging
+  postgres:
+    image: postgres:15-alpine
+    container_name: gauth-postgres
+    environment:
+      POSTGRES_DB: gauth
+      POSTGRES_USER: gauth
+      POSTGRES_PASSWORD: gauth_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      
+  # GAuth with external services
+  gauth-py-full:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gauth-py-full
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      - PYTHONPATH=/home/app
+      - GAUTH_CLIENT_ID=full-client
+      - GAUTH_CLIENT_SECRET=full-secret
+      - GAUTH_AUTH_SERVER_URL=https://auth.example.com
+      - GAUTH_REDIS_URL=redis://redis:6379/0
+      - GAUTH_DATABASE_URL=postgresql://gauth:gauth_password@postgres:5432/gauth
+    ports:
+      - "8081:8000"
+    command: ["python", "-m", "gauth.demo.main"]
+    
+  # Examples runner
+  gauth-py-examples:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gauth-py-examples
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - PYTHONPATH=/app
+    command: ["python", "examples/basic_usage.py"]
+    
+  # Web API service (if implementing FastAPI endpoints)
+  gauth-py-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gauth-py-api
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      - PYTHONPATH=/home/app
+      - GAUTH_CLIENT_ID=api-client
+      - GAUTH_CLIENT_SECRET=api-secret
+      - GAUTH_AUTH_SERVER_URL=https://auth.example.com
+      - GAUTH_REDIS_URL=redis://redis:6379/0
+      - GAUTH_DATABASE_URL=postgresql://gauth:gauth_password@postgres:5432/gauth
+    ports:
+      - "8082:8000"
+    command: ["uvicorn", "gauth.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+volumes:
+  gauth-py-venv:
+  gauth-py-test-venv:
+  redis-data:
+  postgres-data:
+
+networks:
+  default:
+    name: gauth-network
